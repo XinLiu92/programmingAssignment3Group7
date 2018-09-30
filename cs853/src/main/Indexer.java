@@ -1,11 +1,11 @@
 package main;
 
 import co.nstant.in.cbor.CborException;
+import edu.unh.cs.treccar_v2.Data;
+import edu.unh.cs.treccar_v2.read_data.DeserializeData;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
-import org.apache.lucene.document.Document;
-import org.apache.lucene.document.Field;
-import org.apache.lucene.document.StringField;
-import org.apache.lucene.document.TextField;
+import org.apache.lucene.document.*;
+import org.apache.lucene.index.IndexOptions;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.IndexWriterConfig.OpenMode;
@@ -15,6 +15,8 @@ import org.apache.lucene.search.similarities.SimilarityBase;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.List;
@@ -23,28 +25,27 @@ import java.util.List;
 public class Indexer {
     private boolean defualtEngine = true;
     private String indexPath = "";
+    private String paragraphPath = "";
     public Indexer(){
 
     }
 
-    public Indexer(boolean defualtEngine,String indexPath){
+    public Indexer(boolean defualtEngine,String indexPath,String paragraphPath){
         this.defualtEngine = defualtEngine;
         this.indexPath = indexPath;
+        this.paragraphPath = paragraphPath;
     }
 
 
     private IndexWriter indexWriter = null;
 
-    public IndexWriter getIndexWriter(boolean create,boolean defualtEngine) throws IOException {
+    public IndexWriter getIndexWriter(boolean defualtEngine) throws IOException {
         if (indexWriter == null){
             Directory indexDir = FSDirectory.open(Paths.get(indexPath));
             IndexWriterConfig config = new IndexWriterConfig(new StandardAnalyzer());
 
-            if (create) {
-                config.setOpenMode(OpenMode.CREATE);
-            } else {
-                config.setOpenMode(OpenMode.CREATE_OR_APPEND);
-            }
+            config.setOpenMode(OpenMode.CREATE);
+
 
             if (!defualtEngine){
                 config.setSimilarity(createCustomeSimiliarity());
@@ -84,7 +85,7 @@ public class Indexer {
 
     public void indexFile(Paragraph p) throws IOException {
         if(p != null){
-            IndexWriter writer = getIndexWriter(false,defualtEngine);
+            IndexWriter writer = getIndexWriter(defualtEngine);
             Document d = new Document();
             d.add(new StringField("id",p.getParaID(), Field.Store.YES));
             d.add(new TextField("text",p.getParaText(),Field.Store.YES));
@@ -95,13 +96,49 @@ public class Indexer {
     }
 
     public void rebuildIndexes(List<Paragraph> list) throws IOException, CborException {
-        getIndexWriter(true,defualtEngine);
+        getIndexWriter(defualtEngine);
         if (!list.isEmpty()){
             for (Paragraph p : list){
                 indexFile(p);
             }
             closeIndexWriter();
         }
+    }
+
+
+    public void indexParagraph() throws IOException {
+//        Directory indexdir = FSDirectory.open((new File(indexPath)).toPath());
+//        IndexWriterConfig conf = new IndexWriterConfig(new StandardAnalyzer());
+//        conf.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
+//        IndexWriter iw = new IndexWriter(indexdir, conf);
+        //for (Data.Paragraph p : DeserializeData
+          //      .iterableParagraphs(new FileInputStream(new File(paragraphPath)))) {
+            //this.indexPara(iw, p);
+        //}
+//        iw.close();
+
+
+        IndexWriter iw = getIndexWriter(defualtEngine);
+
+        for (Data.Paragraph p : DeserializeData.iterableParagraphs(new FileInputStream(new File(paragraphPath)))){
+            Document d = new Document();
+
+
+            d.add(new StringField("paraid", p.getParaId(), Field.Store.YES));
+            d.add(new TextField("parabody", p.getTextOnly(),
+                    Field.Store.YES));
+            FieldType indexType = new FieldType();
+            indexType.setIndexOptions(IndexOptions.DOCS_AND_FREQS);
+            indexType.setStored(true);
+            indexType.setStoreTermVectors(true);
+
+            d.add(new Field("content", p.getTextOnly(), indexType));
+
+            iw.addDocument(d);
+        }
+
+        iw.close();
+
     }
 
 }

@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.github.TREMA-UNH:trec-car-tools-java:15">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/github/TREMA-UNH/trec-car-tools-java/15/trec-car-tools-java-15.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/github/TREMA-UNH/trec-car-tools-java/15/trec-car-tools-java-15-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/github/TREMA-UNH/trec-car-tools-java/15/trec-car-tools-java-15-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

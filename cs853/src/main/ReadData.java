@@ -7,6 +7,8 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class ReadData {
 
@@ -72,13 +74,53 @@ public class ReadData {
         return  paragraphsList;
     }
 
+    public  static String findHeadling(String str){
+
+        /*
+        String heading = null;
+
+        //String str = "Section{heading=\'USA\', headID = 1}";
+//        String pattern = "heading=\\S*";
+//        String pattern = "heading=\\S*\\s*\\S*";
+        String pattern = "heading=\\D*,";
+
+        Pattern r = Pattern.compile(pattern);
+        Matcher m = r.matcher(str);
+        if (m.find( )) {
+            //heading = m.group(0).substring(9, m.group(0).length()-2);
+//            System.out.println("Found value: " + res );
+
+        } else {
+            System.out.println("NO MATCH");
+        }
+
+        return m.group(0);
+*/
+
+        int firstIndex = str.indexOf('\'');
+
+        StringBuffer builder = new StringBuffer();
+
+        String res = "";
+
+        for (int i = firstIndex+1; i < str.length();i++ ){
+            if (str.charAt(i) == '\''){
+                break;
+            }
+            res += str.charAt(i);
+
+        }
+        return res;
+    }
+
+
     public static List<Page> getPageList(){
         List<Page> pageList = new ArrayList<>();
 
-//        String fileDir = "./test200-train/train.pages.cbor-outlines.cbor";
+        String fileDir = "./test200-train/train.pages.cbor-outlines.cbor";
 
         File file = new File(pagePath);
-
+        //File file = new File(fileDir);
         FileInputStream stream = null;
         try {
             stream = new FileInputStream(file);
@@ -95,6 +137,13 @@ public class ReadData {
         try {
             for (Data.Page page : DeserializeData.iterableAnnotations(stream)){
                 Page p = new Page(page.getPageId(),page.getPageName());
+                List<Data.PageSkeleton> tmp = page.getSkeleton();
+
+                for (Data.PageSkeleton i : tmp){
+                    System.out.println(i.toString());
+                    System.out.println(findHeadling(i.toString()));
+
+                }
                 pageList.add(p);
             }
         }catch (Exception e){
