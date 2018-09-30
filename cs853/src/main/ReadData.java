@@ -138,14 +138,20 @@ public class ReadData {
             for (Data.Page page : DeserializeData.iterableAnnotations(stream)){
                 Page p = new Page(page.getPageId(),page.getPageName());
                 List<Data.PageSkeleton> tmp = page.getSkeleton();
-
+                System.out.println(page.getPageName().toString());
                 for (Data.PageSkeleton i : tmp){
                     System.out.println(i.toString());
                     System.out.println(findHeadling(i.toString()));
 
                 }
+
+
                 pageList.add(p);
+                break;
+
             }
+
+
         }catch (Exception e){
             e.printStackTrace();
         }

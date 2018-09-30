@@ -35,7 +35,7 @@ import edu.unh.cs.treccar_v2.Data;
 
 public class TFIDF_anc_apc {
 
-    static final private String INDEX_DIRECTORY = "/Users/xinliu/Documents/UNH/18Fall/cs853/index";
+    static private String INDEX_DIRECTORY = "/Users/xinliu/Documents/UNH/18Fall/cs853/index";
     static private QueryParser parser = null;
     static private Integer docNum = 100;
 
@@ -43,6 +43,10 @@ public class TFIDF_anc_apc {
         return DirectoryReader.open(FSDirectory.open((new File(path).toPath())));
     }
 
+
+    public TFIDF_anc_apc(String index){
+        this.INDEX_DIRECTORY = index;
+    }
     public static SimilarityBase getAncApcSimilarityBase() throws IOException {
 
         SimilarityBase ancApcSim = new SimilarityBase() {
@@ -61,14 +65,74 @@ public class TFIDF_anc_apc {
         return ancApcSim;
     }
 
-    // Main function anc.apc. Get results for all querys
+    public  static String findHeadling(String str){
+
+
+        int firstIndex = str.indexOf('\'');
+
+        StringBuffer builder = new StringBuffer();
+
+        String res = "";
+
+        for (int i = firstIndex+1; i < str.length();i++ ){
+            if (str.charAt(i) == '\''){
+                break;
+            }
+            res += str.charAt(i);
+
+        }
+        return res;
+    }
+
+
+    public static void retrieveAllAncApcResultsByQuryHeading(List<Data.Page> queryList, String path){
+        String method = "AncApc";
+        List<String> runFileStrList = new ArrayList<String>();
+        if (queryList != null) {
+
+            HashMap<String, Double> result_map = null;
+            for (Data.Page p : queryList) {
+
+                List<Data.PageSkeleton> tmp = p.getSkeleton();
+                String queryStr = null;
+                for (Data.PageSkeleton i : tmp){
+//                    System.out.println(i.toString());
+//                    System.out.println(findHeadling(i.toString()));
+                    queryStr = findHeadling(i.toString());
+
+                }
+
+//                String queryStr = p.getPageId();
+                result_map = getRankedDocuments(queryStr);
+                int i = 0;
+                for (Entry<String, Double> entry : result_map.entrySet()) {
+
+                    String runFileString = queryStr + " Q0 " + entry.getKey() + " " + i + " " + entry.getValue()
+                            + " Group7-" + method;
+                    runFileStrList.add(runFileString);
+                    i++;
+                }
+
+            }
+
+
+            //System.out.println("runFileStrlI" + runFileStrList.size() +"  result map : "+result_map.size());
+        }
+
+
+        // Write run file function
+        if (runFileStrList.size() > 0) {
+            writeStrListToRunFile(runFileStrList, path);
+        } else {
+            System.out.println("No result for run file.");
+        }
+    }
+
     public static void retrieveAllAncApcResults(List<Data.Page> queryList, String path) {
         String method = "AncApc";
         List<String> runFileStrList = new ArrayList<String>();
         if (queryList != null) {
-            // ArrayList<Data.Page> testList = new ArrayList<Data.Page>();
-            // testList.add(queryList.get(0));
-            // testList.add(queryList.get(1));
+
             HashMap<String, Double> result_map = null;
             for (Data.Page p : queryList) {
                 String queryStr = p.getPageId();
@@ -88,7 +152,6 @@ public class TFIDF_anc_apc {
             System.out.println("runFileStrlI" + runFileStrList.size() +"  result map : "+result_map.size());
         }
 
-        // Write run file function
         if (runFileStrList.size() > 0) {
             writeStrListToRunFile(runFileStrList, path);
         } else {
@@ -96,7 +159,6 @@ public class TFIDF_anc_apc {
         }
     }
 
-    // Retrieve ranked result with score for one query string.
     public static HashMap<String, Double> getRankedDocuments(String queryStr) {
 
         HashMap<Term, Float> qTerm_norm = new HashMap<Term, Float>();
@@ -191,15 +253,10 @@ public class TFIDF_anc_apc {
         return sortByValue(doc_score);
     }
 
-    // Go through every term in each document, and find the highest term freq
-    // Return a map with doc id, and its highest term freq.
-    // Document: paraId,parabody
     public static HashMap<String, Integer> getMapOfDocWithMaxTF(IndexReader ir) throws IOException {
 
         HashMap<String, Integer> result_map = new HashMap<String, Integer>();
 
-        // System.out.println(ir.maxDoc());
-        // iterate through documents in index
         for (int i = 0; i < ir.maxDoc(); i++) {
             Document doc = ir.document(i);
             String docId = doc.get("paraid");
@@ -234,7 +291,6 @@ public class TFIDF_anc_apc {
         return result_map;
     }
 
-    // Get normalized weight for each query term. (apc)
     public static HashMap<Term, Float> getNormMapForEachQueryTerm(IndexReader ir, String queryStr) throws IOException {
 
         HashMap<Term, Integer> term_tf = new HashMap<Term, Integer>();
@@ -287,13 +343,11 @@ public class TFIDF_anc_apc {
         return term_norm;
     }
 
-    // Augmented Wt
     public static float getAugmentedWt(int tf, int max_tf) {
 
         return (float) (0.5 + (0.5 * tf / max_tf));
     }
 
-    // Get consine value fro weight list.
     public static float getCosine(List<Float> wt_list) {
         float c = 0;
         float pow_sum = 0;
@@ -308,7 +362,6 @@ public class TFIDF_anc_apc {
     }
 
     public static void writeStrListToRunFile(List<String> strList, String path) {
-        // write to run file.
 
         BufferedWriter bWriter = null;
         FileWriter fWriter = null;
@@ -341,7 +394,6 @@ public class TFIDF_anc_apc {
 
     }
 
-    // Sort Descending HashMap<String, Double>Map by its value
     private static HashMap<String, Double> sortByValue(Map<String, Double> unsortMap) {
 
         List<Map.Entry<String, Double>> list = new LinkedList<Map.Entry<String, Double>>(unsortMap.entrySet());

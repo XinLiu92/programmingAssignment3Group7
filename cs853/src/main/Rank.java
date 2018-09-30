@@ -6,7 +6,7 @@ public class Rank {
     private int rank;
     private float score;
     private String methodTeamName;
-
+    private  String query;
     public void setQueryId(String id){
         this.queryId = id;
     }
@@ -40,6 +40,9 @@ public class Rank {
         return this.score;
     }
 
+    public  void  setQuery(String qr){
+            this.query = qr;
+    }
 
 
     public void setMethodTeamName(String teamName){
