@@ -35,7 +35,7 @@ import edu.unh.cs.treccar_v2.Data;
 
 public class TFIDF_anc_apc {
 
-    static private String INDEX_DIRECTORY = "/Users/xinliu/Documents/UNH/18Fall/cs853/index";
+    static private String INDEX_DIRECTORY;
     static private QueryParser parser = null;
     static private Integer docNum = 100;
 

@@ -59,7 +59,7 @@ public class TFIDF_bnn_bnn {
 
 
     // directory  structure..
-    static private String INDEX_DIRECTORY = "/Users/xinliu/Documents/UNH/18Fall/cs853/index";
+    static private String INDEX_DIRECTORY;
     static final private String OUTPUT_DIR = ".";
 
     private String runFile = "/tfidf_bnn_bnn.run";
