@@ -74,4 +74,12 @@ pdf verison on git:<https://github.com/XinLiu92/programmingAssignment2Group7/blo
 
    The output files will be created under the repository folder.
 
- 
+    indexPath: index path
+
+   paragraphFilePath: paragraph file path, "train.pages.cbor-paragraphs.cbor"
+
+   OutlinesFilePath: train.pages.cbor-outlines.cbor
+
+   articles_qrelsFilePath:train.pages.cbor-article.qrels
+
+   hierarchical_qrelsFilePath:train.pages.cbor-hierarchical.qrels

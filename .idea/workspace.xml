@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="1bf5b7d8-1d6a-47c3-8b6b-1be26db3dfd9" name="Default" comment="">
-      <change beforePath="$PROJECT_DIR$/README.md" afterPath="$PROJECT_DIR$/README.md" />
-    </list>
+    <list default="true" id="1bf5b7d8-1d6a-47c3-8b6b-1be26db3dfd9" name="Default" comment="" />
     <ignored path="$PROJECT_DIR$/cs853/target/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="TRACKING_ENABLED" value="true" />
